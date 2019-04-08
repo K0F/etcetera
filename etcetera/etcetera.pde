@@ -3,7 +3,7 @@
 PImage logo;
 
 void setup() {
-  size(1024,768);
+  size(1024,768,P2D);
   logo = loadImage("logo.png");
 }
 
