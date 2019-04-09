@@ -3,17 +3,18 @@
 PImage logo;
 ArrayList videos;
 String filenames[];
-String path = "/home/kof/src/etcetera/etcetera/videos/";
+String path = "/home/kof/src/etcetera/etcetera/";
 
-int W = 160;
-int H = 120;
+int W = 192;
+int H = 108;
+String tc = "00:03:37";
 
 void setup() {
   //size(displayWidth, displayHeight, P2D);
   size(1024, 768, P2D);
 
 
-  filenames = getFiles(path);
+  filenames = getFiles(path+"videos");
   println(filenames);
 
   textFont(loadFont("MonacoForPowerline-10.vlw"));
@@ -26,7 +27,7 @@ void setup() {
   for (int i = 0; i < filenames.length; i++) {
     videos.add(new Thumbnail(filenames[i], x, y, i));
     x += W + 20;
-    if (x>width-W-100) {
+    if (x>width-W-200) {
       x=50;
       y+=H+20;
     }
@@ -60,24 +61,34 @@ class Thumbnail {
     w = W;
     h = H;
     createThumb();
-    thumb = createImage(w, h, RGB);
+    try {
+      thumb = loadImage(path+"/thumbnails/"+filename+".png");
+    }
+    catch(Exception e) {
+      thumb = createImage(W, H, RGB);
+    }
   }
-  
-  void createThumb(){
-    try{ 
-    ProcessBuilder pb = new ProcessBuilder("/usr/bin/ffmpeg", " -ss 00:01:27"," -i "+path+""+filename," -vframes 1"," -y /home/kof/thumbnail.png > /tmp/err 2>&1");
-    
-    Process proc = pb.start();
-    
-  }catch(Exception e){
-     ; 
+
+  void createThumb() {
+    try { 
+      ProcessBuilder pb = new ProcessBuilder("/usr/bin/ffmpeg", "-ss", tc, "-i", path+"videos/"+filename, "-vframes", "1", "-vf", "scale="+W+":"+H, "-y", path+"thumbnails/"+filename+".png");
+      Process proc = pb.start();
+      try {
+        proc.waitFor();
+      }
+      catch(Exception e) {
+        ;
+      }
+    }
+    catch(Exception e) {
+      ;
     }
   }
 
   void draw() {
 
     fill(0);
-    text(filename, pos.x, pos.y+h+10, w, 20);
+    text(filename, pos.x, pos.y+h+6, w, 20);
     noFill();
     image(thumb, pos.x, pos.y);
 
@@ -101,10 +112,12 @@ class Thumbnail {
 
       // fix correct process handling
       try {
-        ProcessBuilder pb = new ProcessBuilder("/usr/bin/mpv", "--fs", "/home/kof/src/etcetera/etcetera/videos/"+filename, " > /dev/null");
+        ProcessBuilder pb = new ProcessBuilder("/usr/bin/mpv", "--fs", "--osd-level", "0", path+"videos/"+filename, " > /dev/null");
         //Process proc = Process.start(new String[]{});
         Process proc = pb.start();
         playing = true;
+        proc.waitFor();
+        playing = false;
       }
       catch(Exception e) {
         println(e);
