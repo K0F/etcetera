@@ -4,7 +4,7 @@ Parser parser;
 ArrayList entries;
 
 String filenames[];
-String path = "/home/kof/src/etcetera/etcetera/";
+String path;
 
 int W = 192;
 int H = 108;
@@ -18,6 +18,7 @@ void setup() {
   //size(displayWidth, displayHeight, P2D);
   size(1920, 1080, P2D);
 
+  path = sketchPath()+"/";
   //filenames = getFiles(path+"videos");
   //println(filenames);
 
@@ -30,6 +31,8 @@ void setup() {
 
   logo = loadImage("logo.png");
 
+  entries = new ArrayList();
+  parser = new Parser("sklad_etc.tsv");
 }
 
 
@@ -80,7 +83,7 @@ class Parser{
   ArrayList getList(){
     ArrayList tmp = new ArrayList();
     int x = 50, y = 50;
-    for(int i = 0 ; i < raw.length ; i++){
+    for(int i = 1 ; i < raw.length ; i++){
       String line[] = split(raw[i],'\t');
       println(line.length);
       tmp.add(
@@ -113,11 +116,12 @@ class Entry{
   String filename,autor,puvodni_nazev,anglicke_nazvy,rok,kdy,email,souhlas,statement;
   PImage thumb;
   PVector pos;
-  String textname;
   int w, h;
   int id;
   boolean playing = false;
   String anotace;
+  //fix this!
+  String extension = "mp4";
 
   Entry(
       int _x,
@@ -135,7 +139,6 @@ class Entry{
       ){
 
     filename=_filename+"";
-    textname=splitTokens(filename,".")[0]+".txt";
 
     autor=_autor+"";
     puvodni_nazev=_puvodni_nazev+"";
@@ -150,36 +153,35 @@ class Entry{
     pos = new PVector(_x, _y);
     w = W;
     h = H;
-    createThumb();
-    try {
-      thumb = loadImage(path+"/thumbnails/"+filename+".png");
-      String temp[] = loadStrings(path+"/videos/"+textname);
-      anotace = "";
-      for(int i = 0 ; i < temp.length;i++){
-        anotace += temp[i]+"\n";
-      }
-    }
-    catch(Exception e) {
-      thumb = createImage(W, H, RGB);
+    anotace = filename+" "+autor;
+    
+    if(filename.equals("")){
+      thumb = loadImage("empty.png");
+    }else if(createThumb()){
+      thumb = loadImage(path+"thumbnails/"+filename+".png");
+    }else{
+      thumb = loadImage("empty.png");
     }
   }
 
 
 
-  void createThumb() {
+  boolean createThumb() {
     try { 
-      ProcessBuilder pb = new ProcessBuilder("/usr/bin/ffmpeg", "-ss", tc, "-i", path+"videos/"+filename, "-vframes", "1", "-vf", "scale="+W+":"+H, "-y", path+"thumbnails/"+filename+".png");
+      ProcessBuilder pb = new ProcessBuilder("/usr/bin/ffmpeg", "-ss", tc, "-i", path+"videos/"+filename+"."+extension, "-vframes", "1", "-vf", "scale="+W+":"+H, "-y", path+"thumbnails/"+filename+".png");
       Process proc = pb.start();
+      
       try {
         proc.waitFor();
+      }catch(Exception e) {
+        return false;
       }
-      catch(Exception e) {
-        ;
-      }
+
     }
     catch(Exception e) {
-      ;
+      return false;
     }
+    return true;
   }
 
   void draw() {
