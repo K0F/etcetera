@@ -1,7 +1,8 @@
 
-
 PImage logo;
-ArrayList videos;
+Parser parser;
+ArrayList entries;
+
 String filenames[];
 String path = "/home/kof/src/etcetera/etcetera/";
 
@@ -9,18 +10,47 @@ int W = 192;
 int H = 108;
 String tc = "00:03:37";
 
+int lover = 0;
+String text[];
+PFont header,body;
+
 void setup() {
   //size(displayWidth, displayHeight, P2D);
-  size(1024, 768, P2D);
+  size(1920, 1080, P2D);
 
+  //filenames = getFiles(path+"videos");
+  //println(filenames);
 
-  filenames = getFiles(path+"videos");
-  println(filenames);
+  //header = textFont(loadFont("MonacoForPowerline-10.vlw"));
+  body = loadFont("FalsterGroteskReg-Regular-18.vlw");
+  header = loadFont("FalsterGroteskReg-Regular-48.vlw");
 
-  textFont(loadFont("MonacoForPowerline-10.vlw"));
 
   //println(display);
+
   logo = loadImage("logo.png");
+
+}
+
+
+
+void draw() {
+  background(255);
+  image(logo, width-logo.width-40, 20);
+
+  for (int i = 0; i < entries.size(); i++) {
+    Entry tmp = (Entry)entries.get(i);
+    
+    tmp.draw();
+
+    if(lover==i)
+      tmp.drawText();
+  }
+
+
+}
+
+/*
   videos = new ArrayList();
 
   int x = 50, y = 50;
@@ -32,42 +62,109 @@ void setup() {
       y+=H+20;
     }
   }
-}
 
+*/
 
+class Parser{
 
-void draw() {
-  background(255);
-  image(logo, width-logo.width-40, 20);
+  String filename;
+  String [] raw;
 
-  for (int i = 0; i < videos.size(); i++) {
-    Thumbnail tmp = (Thumbnail)videos.get(i);
-    tmp.draw();
+  Parser(String _filename){
+    filename = _filename;
+    raw = loadStrings(filename);
+    // global
+    entries = getList();
+  }
+
+  ArrayList getList(){
+    ArrayList tmp = new ArrayList();
+    int x = 50, y = 50;
+    for(int i = 0 ; i < raw.length ; i++){
+      String line[] = split(raw[i],'\t');
+      println(line.length);
+      tmp.add(
+      new Entry(
+            x,y,i,
+            line[0],
+            line[1],
+            line[2],
+            line[3],
+            line[4],
+            line[5],
+            line[6],
+            line[7],
+            line[8])
+            );
+
+            x += W + 20;
+            
+            if (x > width/2-W){
+              x=50;
+              y+=H=20;
+            }
+    };
+    return tmp;
   }
 }
 
-class Thumbnail {
+class Entry{
+
+  String filename,autor,puvodni_nazev,anglicke_nazvy,rok,kdy,email,souhlas,statement;
   PImage thumb;
   PVector pos;
-  String filename;
+  String textname;
   int w, h;
   int id;
   boolean playing = false;
+  String anotace;
 
-  Thumbnail(String _filename, int _x, int _y, int _id) {
-    id = _id;
+  Entry(
+      int _x,
+      int _y,
+      int _id,
+      String _filename,
+      String _autor,
+      String _puvodni_nazev,
+      String _anglicke_nazvy,
+      String _rok,
+      String _kdy,
+      String _email,
+      String _souhlas,
+      String _statement
+      ){
+
     filename=_filename+"";
+    textname=splitTokens(filename,".")[0]+".txt";
+
+    autor=_autor+"";
+    puvodni_nazev=_puvodni_nazev+"";
+    anglicke_nazvy=_anglicke_nazvy+"";
+    rok=_rok+"";
+    kdy=_kdy+"";
+    email=_email+"";
+    souhlas=_souhlas+"";
+    statement=_statement+"";
+
+    id = _id;
     pos = new PVector(_x, _y);
     w = W;
     h = H;
     createThumb();
     try {
       thumb = loadImage(path+"/thumbnails/"+filename+".png");
+      String temp[] = loadStrings(path+"/videos/"+textname);
+      anotace = "";
+      for(int i = 0 ; i < temp.length;i++){
+        anotace += temp[i]+"\n";
+      }
     }
     catch(Exception e) {
       thumb = createImage(W, H, RGB);
     }
   }
+
+
 
   void createThumb() {
     try { 
@@ -125,10 +222,18 @@ class Thumbnail {
     }
   }
 
+  void drawText(){
+    int pad = 20;
+    textFont(header);
+    text(anotace,width/2+pad,pad,width/2-pad*2,height-pad*2);
+  }
+
   boolean over() {
-    if (mouseX>pos.x && mouseX<w+pos.x && mouseY>pos.y && mouseY<h+pos.y)
+    if (mouseX>pos.x && mouseX<w+pos.x && mouseY>pos.y && mouseY<h+pos.y){
+      lover = id;
       return true;
-    else
+    }else{
       return false;
+    }
   }
 }
