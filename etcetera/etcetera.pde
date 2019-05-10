@@ -85,7 +85,7 @@ class Parser{
     int x = 50, y = 50;
     for(int i = 1 ; i < raw.length ; i++){
       String line[] = split(raw[i],'\t');
-      println(line.length);
+      //println(line);
       tmp.add(
       new Entry(
             x,y,i,
@@ -97,7 +97,8 @@ class Parser{
             line[5],
             line[6],
             line[7],
-            line[8])
+            line[8],
+            line[9])
             );
 
             x += W + 20;
@@ -134,10 +135,12 @@ class Entry{
       String _rok,
       String _kdy,
       String _email,
-      String _souhlas,
-      String _statement
+      String _statement,
+      String _wtf,
+      String _souhlas
       ){
 
+    println(_statement);
     filename=_filename+"";
 
     autor=_autor+"";
@@ -223,14 +226,45 @@ class Entry{
     }
   }
 
+  int numLines(String input){
+    int c = 0;
+    
+    if(input.indexOf('\n')==-1)
+      return 0;
+
+    while(input.indexOf('\n')>-1){
+      input=input.substring(input.indexOf('\n')+1,input.length());
+      c++;
+    }
+    return c;
+  }
+
   void drawText(){
     int pad = 20;
 
     textFont(header);
-    text(autor+"\n"+puvodni_nazev+", "+rok, width/2+pad,pad,width/2-pad*2,height-pad*2);
+    int hh = pad*10;
+    text(autor+"\n"+puvodni_nazev+"\n"+rok, width/2+pad,hh,width/2-pad*2,height-pad*2);
     
+    hh+=numLines(autor+"\n"+puvodni_nazev+"\n"+rok)*72+50;
+
     textFont(body);
-    text(statement,width/2+pad,pad,width/2-pad*2,height-pad*2+300);
+    
+    if(!souhlas.equals("")){
+      hh+=pad*4;
+    text("agreement:\n"+souhlas,width/2+pad,hh,width/2-pad*8,height-pad*2);
+    }
+
+    if(!email.equals("")){
+      hh+=pad*4;
+      text("contact:\n"+email,width/2+pad,hh,width/2-pad*8,height-pad*2);
+    }
+
+    if(!statement.equals("")){
+      hh+=pad*4;
+      text("statement:\n"+statement,width/2+pad,hh,width/2-pad*8,height-pad*2);
+    }
+  
   }
 
   boolean over() {
