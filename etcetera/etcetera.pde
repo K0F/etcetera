@@ -8,7 +8,7 @@ String path;
 
 int W = 192;
 int H = 108;
-String tc = "00:03:37";
+String tc = "00:00:37";
 
 int lover = 0;
 String text[];
@@ -104,7 +104,7 @@ class Parser{
             
             if (x > width/2-W){
               x=50;
-              y+=H=20;
+              y+=H+20;
             }
     };
     return tmp;
@@ -151,8 +151,8 @@ class Entry{
 
     id = _id;
     pos = new PVector(_x, _y);
-    w = W;
-    h = H;
+    w = width/2;
+    h = height-100;
     anotace = filename+" "+autor;
     
     if(filename.equals("")){
@@ -187,16 +187,15 @@ class Entry{
   void draw() {
 
     fill(0);
-    text(filename, pos.x, pos.y+h+6, w, 20);
-    noFill();
-    image(thumb, pos.x, pos.y);
+        noFill();
+    image(thumb, pos.x, pos.y,W,H);
 
     if (over()) {
       pushStyle();
       stroke(0);
       strokeWeight(3);
 
-      rect(pos.x, pos.y, w, h);
+      rect(pos.x, pos.y, W, H);
 
       popStyle();
       if (mousePressed) {
@@ -226,12 +225,16 @@ class Entry{
 
   void drawText(){
     int pad = 20;
+
     textFont(header);
-    text(anotace,width/2+pad,pad,width/2-pad*2,height-pad*2);
+    text(autor+"\n"+puvodni_nazev+", "+rok, width/2+pad,pad,width/2-pad*2,height-pad*2);
+    
+    textFont(body);
+    text(statement,width/2+pad,pad,width/2-pad*2,height-pad*2+300);
   }
 
   boolean over() {
-    if (mouseX>pos.x && mouseX<w+pos.x && mouseY>pos.y && mouseY<h+pos.y){
+    if (mouseX>pos.x && mouseX<W+pos.x && mouseY>pos.y && mouseY<H+pos.y){
       lover = id;
       return true;
     }else{
