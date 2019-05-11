@@ -44,9 +44,9 @@ void draw() {
 
   for (int i = 0; i < entries.size(); i++) {
     Entry tmp = (Entry)entries.get(i);
-   
-   pushMatrix();
-   translate(0,-scroll);
+
+    pushMatrix();
+    translate(0,-scroll);
     tmp.draw();
     popMatrix();
 
@@ -64,19 +64,19 @@ void draw() {
 }
 
 /*
-  videos = new ArrayList();
+   videos = new ArrayList();
 
-  int x = 50, y = 50;
-  for (int i = 0; i < filenames.length; i++) {
-    videos.add(new Thumbnail(filenames[i], x, y, i));
-    x += W + 20;
-    if (x>width-W-200) {
-      x=50;
-      y+=H+20;
-    }
-  }
+   int x = 50, y = 50;
+   for (int i = 0; i < filenames.length; i++) {
+   videos.add(new Thumbnail(filenames[i], x, y, i));
+   x += W + 20;
+   if (x>width-W-200) {
+   x=50;
+   y+=H+20;
+   }
+   }
 
-*/
+ */
 
 class Parser{
 
@@ -96,12 +96,12 @@ class Parser{
     for(int i = 1 ; i < raw.length ; i++){
       String line[] = split(raw[i],'\t');
       //println(line);
-     
+
       for(int ii = 0 ; ii < line.length;ii++){
         println("line["+ii+"] = "+line[ii]);
       }
       tmp.add(
-      new Entry(
+          new Entry(
             x,y,i,
             line[0],
             line[1],
@@ -113,17 +113,17 @@ class Parser{
             line[7],
             line[8],
             line[9])
-            );
+          );
 
-            x += W + 20;
-            
-            if (x > width/2-W){
-              x=50;
-              y+=H+20;
-              maxH=max(H,maxH)+H+20;
-            }
+      x += W + 20;
+
+      if (x > width/2-W){
+        x=50;
+        y+=H+20;
+        maxH=max(H,maxH)+H+20;
+      }
     };
-            maxH = maxH+H+20 - height;
+    maxH = maxH+H+20 - height;
     return tmp;
   }
 }
@@ -173,7 +173,7 @@ class Entry{
     w = width/2;
     h = height-100;
     anotace = filename+" "+autor;
-    
+
     if(filename.equals("")){
       thumb = loadImage("empty.png");
     }else if(createThumb()){
@@ -189,7 +189,7 @@ class Entry{
     try { 
       ProcessBuilder pb = new ProcessBuilder("/usr/bin/ffmpeg", "-ss", tc, "-i", path+"videos/"+filename+"."+extension, "-vframes", "1", "-vf", "scale="+W+":"+H, "-y", path+"thumbnails/"+filename+".png");
       Process proc = pb.start();
-      
+
       try {
         proc.waitFor();
       }catch(Exception e) {
@@ -206,7 +206,7 @@ class Entry{
   void draw() {
 
     fill(0);
-        noFill();
+    noFill();
     image(thumb, pos.x, pos.y,W,H);
 
     if (over()) {
@@ -225,26 +225,35 @@ class Entry{
 
   void run() {
     if (!playing) {
+      playing=true;
       println("running "+id+" filename "+filename);
 
-      // fix correct process handling
-      try {
-        ProcessBuilder pb = new ProcessBuilder("/usr/bin/mpv", "--fs", "--osd-level", "0", path+"videos/"+filename, " > /dev/null");
-        //Process proc = Process.start(new String[]{});
-        Process proc = pb.start();
-        playing = true;
-        proc.waitFor();
-        playing = false;
-      }
-      catch(Exception e) {
-        println(e);
+      int http = statement.indexOf("http");
+      if(http>-1 && !statement.equals("")){
+        String address = statement.substring(http,statement.length());
+        address = statement.substring(0,statement.indexOf(" "));
+        println("opening "+address);
+        link(address);
+      }else{
+        // fix correct process handling
+        try {
+          ProcessBuilder pb = new ProcessBuilder("mpv", "--fs", "--osd-level", "0", path+"videos/"+filename+".mp4", " > /dev/null");
+          //Process proc = Process.start(new String[]{});
+          Process proc = pb.start();
+          proc.waitFor();
+          playing = false;
+        }
+        catch(Exception e) {
+          playing = false;
+          println(e);
+        }
       }
     }
   }
 
   int numLines(String input){
     int c = 0;
-    
+
     if(input.indexOf('\n')==-1)
       return 0;
 
@@ -261,11 +270,11 @@ class Entry{
     textFont(header);
     int hh = pad*10;
     text(autor+"\n"+puvodni_nazev+"\n"+rok, width/2+pad,hh,width/2-pad*2,height-pad*2);
-    
+
     hh+=numLines(autor+"\n"+puvodni_nazev+"\n"+rok)*72+50;
 
     textFont(body);
-    
+
     if(!filename.equals("")){
       hh+=pad*4;
       text("filename:\n"+filename+".mp4",width/2+pad,hh,width/2-pad*8,height-pad*2);
@@ -291,7 +300,7 @@ class Entry{
       hh+=pad*4;
       text("statement:\n"+statement,width/2+pad,hh,width/2-pad*8,height-pad*2);
     }
-  
+
   }
 
   boolean over() {
@@ -310,5 +319,5 @@ class Entry{
 void mouseWheel(MouseEvent event) {
   float e = event.getCount();
   scrollTarget += (e*H+20);
-  println(e);
+  //println(e);
 }
