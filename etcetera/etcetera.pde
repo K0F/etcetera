@@ -6,13 +6,14 @@ ArrayList entries;
 String filenames[];
 String path;
 
-int W = 192;
-int H = 108;
+int W = 192*2;
+int H = 108*2;
 String tc = "00:00:37";
 
 int lover = 0;
 String text[];
 PFont header,body;
+float scroll,scrollTarget,maxH;
 
 void setup() {
   //size(displayWidth, displayHeight, P2D);
@@ -43,14 +44,23 @@ void draw() {
 
   for (int i = 0; i < entries.size(); i++) {
     Entry tmp = (Entry)entries.get(i);
-    
+   
+   pushMatrix();
+   translate(0,-scroll);
     tmp.draw();
+    popMatrix();
 
     if(lover==i)
       tmp.drawText();
   }
 
+  scroll+=(scrollTarget-scroll)/10.0;
+  if(scroll<0){
+    scrollTarget+=(0-scrollTarget)/5.0;
+  }else if(scroll>maxH){
+    scrollTarget+=(maxH-scrollTarget)/5.0;
 
+  }
 }
 
 /*
@@ -86,6 +96,10 @@ class Parser{
     for(int i = 1 ; i < raw.length ; i++){
       String line[] = split(raw[i],'\t');
       //println(line);
+     
+      for(int ii = 0 ; ii < line.length;ii++){
+        println("line["+ii+"] = "+line[ii]);
+      }
       tmp.add(
       new Entry(
             x,y,i,
@@ -106,8 +120,10 @@ class Parser{
             if (x > width/2-W){
               x=50;
               y+=H+20;
+              maxH=max(H,maxH)+H+20;
             }
     };
+            maxH = maxH+H+20 - height;
     return tmp;
   }
 }
@@ -134,9 +150,9 @@ class Entry{
       String _anglicke_nazvy,
       String _rok,
       String _kdy,
-      String _email,
+      String _kdy_en,
       String _statement,
-      String _wtf,
+      String _email,
       String _souhlas
       ){
 
@@ -250,9 +266,20 @@ class Entry{
 
     textFont(body);
     
+    if(!filename.equals("")){
+      hh+=pad*4;
+      text("filename:\n"+filename+".mp4",width/2+pad,hh,width/2-pad*8,height-pad*2);
+    }
+
+    if(!kdy.equals("")){
+      hh+=pad*4;
+      text("screened:\n"+kdy,width/2+pad,hh,width/2-pad*8,height-pad*2);
+    }
+
+
     if(!souhlas.equals("")){
       hh+=pad*4;
-    text("agreement:\n"+souhlas,width/2+pad,hh,width/2-pad*8,height-pad*2);
+      text("agreement:\n"+souhlas,width/2+pad,hh,width/2-pad*8,height-pad*2);
     }
 
     if(!email.equals("")){
@@ -268,11 +295,20 @@ class Entry{
   }
 
   boolean over() {
-    if (mouseX>pos.x && mouseX<W+pos.x && mouseY>pos.y && mouseY<H+pos.y){
+    if (mouseX>pos.x && mouseX<W+pos.x && mouseY>pos.y-scroll && mouseY<H+pos.y-scroll){
       lover = id;
       return true;
     }else{
       return false;
     }
   }
+}
+
+
+//scroll
+
+void mouseWheel(MouseEvent event) {
+  float e = event.getCount();
+  scrollTarget += (e*H+20);
+  println(e);
 }
