@@ -23,10 +23,10 @@ void keyPressed(){
       proc.waitFor();
       entries = new ArrayList();
       parser = new Parser("sklad_etc.tsv"); 
-      }catch(Exception e){
-    println("reloading failed "+e);
+    }catch(Exception e){
+      println("reloading failed "+e);
+    }
   }
-}
 }
 
 
@@ -171,7 +171,7 @@ class Entry{
       String _souhlas
       ){
 
-   
+
     filename=_filename+"";
 
     autor=_autor+"";
@@ -188,7 +188,7 @@ class Entry{
     statement = statement.replace("* ","\n");
     statement = statement.replace(" *","\n");
     statement = statement.replace("*","\n");
-    
+
 
     id = _id;
     pos = new PVector(_x, _y);
@@ -251,7 +251,7 @@ class Entry{
       println("running "+id+" filename "+filename);
 
       int http = statement.indexOf("http");
-      if(http>-1 && !statement.equals("")){
+      if(http > -1 ){
         String address = statement.substring(http,statement.length());
         address = statement.substring(0,statement.indexOf(" "));
         println("opening "+address);
@@ -297,12 +297,12 @@ class Entry{
 
     textFont(body);
 
-/*
-    if(!filename.equals("")){
-      hh+=pad*4;
-      text("filename:\n"+filename+".mp4",width/2+pad,hh,width/2-pad*8,height-pad*2);
-    }
-*/
+    /*
+       if(!filename.equals("")){
+       hh+=pad*4;
+       text("filename:\n"+filename+".mp4",width/2+pad,hh,width/2-pad*8,height-pad*2);
+       }
+     */
 
     if(!kdy.equals("")){
       hh+=pad*4;
@@ -315,17 +315,17 @@ class Entry{
     }
 
 
-/*
-    if(!souhlas.equals("")){
-      hh+=pad*4;
-      text("agreement:\n"+souhlas,width/2+pad,hh,width/2-pad*8,height-pad*2);
-    }
+    /*
+       if(!souhlas.equals("")){
+       hh+=pad*4;
+       text("agreement:\n"+souhlas,width/2+pad,hh,width/2-pad*8,height-pad*2);
+       }
 
-    if(!email.equals("")){
-      hh+=pad*4;
-      text("contact:\n"+email,width/2+pad,hh,width/2-pad*8,height-pad*2);
-    }
-*/
+       if(!email.equals("")){
+       hh+=pad*4;
+       text("contact:\n"+email,width/2+pad,hh,width/2-pad*8,height-pad*2);
+       }
+     */
 
     if(!statement.equals("")){
       hh+=pad*4;
