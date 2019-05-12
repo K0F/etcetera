@@ -8,12 +8,27 @@ String path;
 
 int W = 192*2;
 int H = 108*2;
-String tc = "00:00:37";
+String tc = "00:00:27";
 
 int lover = 0;
 String text[];
 PFont header,body;
 float scroll,scrollTarget,maxH;
+
+void keyPressed(){
+  if(key==' '){
+    try{
+      ProcessBuilder pb = new ProcessBuilder("curl", "\"https://docs.google.com/spreadsheets/d/1CcyZM9IFepGnKqWFYXA5yRojejtrXtmbymbCWi3GFfE/export?gid=0&format=tsv\" > sklad_etc.tsv"+path+"/data/");
+      Process proc = pb.start();
+      proc.waitFor();
+      entries = new ArrayList();
+      parser = new Parser("sklad_etc.tsv"); 
+      }catch(Exception e){
+    println("reloading failed "+e);
+  }
+}
+}
+
 
 void setup() {
   //size(displayWidth, displayHeight, P2D);
@@ -130,7 +145,7 @@ class Parser{
 
 class Entry{
 
-  String filename,autor,puvodni_nazev,anglicke_nazvy,rok,kdy,email,souhlas,statement;
+  String filename,autor,puvodni_nazev,anglicke_nazvy,rok,kdy,kdy_en,email,souhlas,statement;
   PImage thumb;
   PVector pos;
   int w, h;
@@ -156,7 +171,7 @@ class Entry{
       String _souhlas
       ){
 
-    println(_statement);
+   
     filename=_filename+"";
 
     autor=_autor+"";
@@ -164,9 +179,16 @@ class Entry{
     anglicke_nazvy=_anglicke_nazvy+"";
     rok=_rok+"";
     kdy=_kdy+"";
+    kdy_en=_kdy_en+"";
     email=_email+"";
     souhlas=_souhlas+"";
     statement=_statement+"";
+
+    // println(_statement);
+    statement = statement.replace("* ","\n");
+    statement = statement.replace(" *","\n");
+    statement = statement.replace("*","\n");
+    
 
     id = _id;
     pos = new PVector(_x, _y);
@@ -275,17 +297,25 @@ class Entry{
 
     textFont(body);
 
+/*
     if(!filename.equals("")){
       hh+=pad*4;
       text("filename:\n"+filename+".mp4",width/2+pad,hh,width/2-pad*8,height-pad*2);
     }
+*/
 
     if(!kdy.equals("")){
       hh+=pad*4;
-      text("screened:\n"+kdy,width/2+pad,hh,width/2-pad*8,height-pad*2);
+      text(kdy,width/2+pad,hh,width/2-pad*8,height-pad*2);
+    }
+
+    if(!kdy_en.equals("")){
+      hh+=pad*4;
+      text(kdy_en,width/2+pad,hh,width/2-pad*8,height-pad*2);
     }
 
 
+/*
     if(!souhlas.equals("")){
       hh+=pad*4;
       text("agreement:\n"+souhlas,width/2+pad,hh,width/2-pad*8,height-pad*2);
@@ -295,10 +325,11 @@ class Entry{
       hh+=pad*4;
       text("contact:\n"+email,width/2+pad,hh,width/2-pad*8,height-pad*2);
     }
+*/
 
     if(!statement.equals("")){
       hh+=pad*4;
-      text("statement:\n"+statement,width/2+pad,hh,width/2-pad*8,height-pad*2);
+      text(statement,width/2+pad,hh,width/2-pad*8,height-pad*2);
     }
 
   }
@@ -318,6 +349,6 @@ class Entry{
 
 void mouseWheel(MouseEvent event) {
   float e = event.getCount();
-  scrollTarget += (e*H+20);
+  scrollTarget += (e*H/2+20);
   //println(e);
 }
