@@ -302,7 +302,7 @@ class Entry{
 
     textFont(header);
     int hh = pad*10;
-    text(autor+"\n"+puvodni_nazev+"\n"+rok, width/2+pad,hh,width/2-pad*2,height-pad*2);
+    text(autor+"\n"+puvodni_nazev+"\n"+((anglicke_nazvy.length()>1)?anglicke_nazvy+"\n":"")+rok, width/2+pad,hh,width/2-pad*2,height-pad*2);
 
     hh+=numLines(autor+"\n"+puvodni_nazev+"\n"+rok)*72+50;
 
