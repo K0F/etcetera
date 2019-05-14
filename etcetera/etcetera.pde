@@ -270,10 +270,13 @@ class Entry{
       }else{
         // fix correct process handling
         try {
+	  if(!filename.equals("")){
+			
           ProcessBuilder pb = new ProcessBuilder("mpv", "--fs", "--osd-level", "0", path+"videos/"+filename, " > /dev/null");
           //Process proc = Process.start(new String[]{});
           Process proc = pb.start();
           proc.waitFor();
+}
           playing = false;
         }
         catch(Exception e) {
