@@ -117,7 +117,7 @@ class Parser{
       }
       tmp.add(
           new Entry(
-            x,y,i,
+            x,y,i-1,
             line[0],
             line[1],
             line[2],
@@ -253,9 +253,20 @@ class Entry{
       int http = statement.indexOf("http");
       if(http > -1 ){
         String address = statement.substring(http,statement.length());
-        address = statement.substring(0,statement.indexOf(" "));
+        if(address.indexOf(" ")>-1){
+        address = ""+address.substring(0,address.indexOf(" "));
+        }
         println("opening "+address);
-        link(address);
+        //link(address);
+        try{
+
+          ProcessBuilder pb = new ProcessBuilder("firefox",address);
+          Process proc = pb.start();
+          proc.waitFor();
+          playing = false;
+        }catch(Exception e){
+
+        }
       }else{
         // fix correct process handling
         try {
