@@ -209,7 +209,7 @@ class Entry{
 
   boolean createThumb() {
     try { 
-      ProcessBuilder pb = new ProcessBuilder("/usr/bin/ffmpeg", "-ss", tc, "-i", path+"videos/"+filename+"."+extension, "-vframes", "1", "-vf", "scale="+W+":"+H, "-y", path+"thumbnails/"+filename+".png");
+      ProcessBuilder pb = new ProcessBuilder("/usr/bin/ffmpeg", "-ss", tc, "-i", path+"videos/"+filename, "-vframes", "1", "-vf", "scale="+W+":"+H, "-y", path+"thumbnails/"+filename+".png");
       Process proc = pb.start();
 
       try {
