@@ -242,13 +242,15 @@ class Entry{
 
 			popStyle();
 			if (mousePressed) {
+				playing=true;
 				run();
+				playing=false;
 			}
 		}
 	}
 
 	void run() {
-		if (!playing) {
+		if (playing) {
 			println("running "+id+" filename "+filename);
 
 			int http = statement.indexOf("http");
@@ -264,17 +266,15 @@ class Entry{
 					ProcessBuilder pb = new ProcessBuilder("firefox",address);
 					Process proc = pb.start();
 					proc.waitFor();
-					playing = false;
 				}catch(Exception e){
 
 				}
 			}else{
 				// fix correct process handling
 				try {
-					if(!filename.equals("") && !playing){
+					if(!filename.equals("")){
 
 						ProcessBuilder pb = new ProcessBuilder("mpv", "--fs", "--osc=no", path+"videos/"+filename, " > /dev/null "," 2>&1");
-
 						pb.redirectErrorStream(true);
 
 
@@ -290,18 +290,14 @@ class Entry{
 
 						try{
 							proc.waitFor();
-							playing=false;
 						}catch(Exception e){;}
 					}
-					playing = false;
 				}
 				catch(Exception e) {
-					playing = false;
 					println(e);
 				}
 			}
 
-			playing=true;
 		}
 	}
 
