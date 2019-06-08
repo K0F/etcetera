@@ -4,7 +4,7 @@ This is custom software of gallery kiosk for browsing and playing multiple video
 
 ## instalation
 
-For full instalation please download full distribution [image](http://localhost) and copy onto disk / flash drive using ```dd``` command (MacOs / Linux).
+For full instalation please download full distribution [image](http://localhost) (dead link, not released yet) and copy onto disk / flash drive using ```dd``` command (MacOs / Linux).
 
 ```
 dd if=etcetera.img of=/dev/targetdrive bs=1M
